@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react'
 import * as XLSX from 'xlsx';
-import readXlsxFile from 'read-excel-file'
+
 
 
 export default class App extends Component {
@@ -19,12 +19,6 @@ export default class App extends Component {
 
    onInputChangeHandelre = (evt) =>{
   let input = evt.target.files[0]
-  // readXlsxFile(input).then((rows, cols) => {
-  //   // `rows` is an array of rows
-  //   // each row being an array of cells.
-  //   console.log(rows, cols)
-  // })
-   //f = file
 var name = evt.name;
 const reader = new FileReader();
 reader.onload = (evt) => {
