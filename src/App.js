@@ -1,11 +1,13 @@
 
 import React, { Component } from 'react'
 import * as XLSX from 'xlsx';
+import readXlsxFile from 'read-excel-file'
 
 
 export default class App extends Component {
    state = {
      text: '',
+     numbers: [],
 
    }
 
@@ -17,6 +19,11 @@ export default class App extends Component {
 
    onInputChangeHandelre = (evt) =>{
   let input = evt.target.files[0]
+  // readXlsxFile(input).then((rows, cols) => {
+  //   // `rows` is an array of rows
+  //   // each row being an array of cells.
+  //   console.log(rows, cols)
+  // })
    //f = file
 var name = evt.name;
 const reader = new FileReader();
@@ -24,13 +31,24 @@ reader.onload = (evt) => {
     /* Parse data */
     const bstr = evt.target.result;
     const wb = XLSX.read(bstr, {type:'binary'});
+    
     /* Get first worksheet */
     const wsname = wb.SheetNames[0];
     const ws = wb.Sheets[wsname];
     /* Convert array of arrays */
-    const data = XLSX.utils.sheet_to_csv(ws, {header:1});
+    const data = XLSX.utils.sheet_to_json(ws, {header:1});
+   
     /* Update state */
-    console.log("Data>>>"+data);
+    
+    function flatten(arr) {
+      return [].concat.apply([], arr);
+    }
+    let flattenArr = flatten(data)
+    console.log(flattenArr)
+    this.setState({
+      numbers: flattenArr
+    })
+   ;
 };
 reader.readAsBinaryString(input);
    }
@@ -48,7 +66,13 @@ reader.readAsBinaryString(input);
     </div>
     <div class="form-group">
   <label class="col-form-label" for="inputDefault">Or Add Numbers</label>
-  <input type="text" class="form-control" placeholder="Add comma seperated Numbers" id="inputDefault" />
+  <input 
+  type="text" 
+  class="form-control" 
+  placeholder="Add comma seperated Numbers" 
+  id="inputDefault"
+  value={this.state.numbers}
+  />
 </div>
     <div class="form-group">
       <label for="exampleTextarea">Type Custom message {this.state.text}</label>
