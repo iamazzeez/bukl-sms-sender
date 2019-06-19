@@ -2,19 +2,28 @@
 import React, { Component } from 'react'
 import * as XLSX from 'xlsx';
 
+const msg91 = require("msg91")("280314AmKDVfxXc6UC5cfdf599", "TRQ_MTS", "4" );
+
+
 
 
 export default class App extends Component {
    state = {
      text: '',
-     numbers: [],
-
+     numbers: '',
+     numberInput: []
    }
 
    onChangeHandler = (e) => {
      this.setState({
        text : e.target.value
      })
+   }
+
+   onChangeHandlerNumbers = (e) => {
+    this.setState({
+      numbers : e.target.value
+    })
    }
 
    onInputChangeHandelre = (evt) =>{
@@ -40,12 +49,45 @@ reader.onload = (evt) => {
     let flattenArr = flatten(data)
     console.log(flattenArr)
     this.setState({
-      numbers: flattenArr
+      numbers: flattenArr,
+      numberInput: flattenArr
     })
    ;
 };
 reader.readAsBinaryString(input);
    }
+
+   //Msg91 sms 
+   
+ onSend = () => {
+//    msg91.send('9902932734', this.state.text, function(err, response){
+//     console.log(err);
+//     console.log(response);
+// });
+// console.log(JSON.stringify( this.state.numbers))
+// console.log(JSON.stringify( this.state.numberInput))
+
+fetch('http://localhost:5000/', {
+  method: 'POST',
+  body: JSON.stringify({ sms:   { message: this.state.text, to:  this.state.numberInput }  }),
+  headers: {
+    'Content-Type': 'application/json',
+  }
+}).then(res => {
+  if(res.status !== 200 && res.status !== 201){
+    throw new Error('Failed!')
+  } 
+  res.json().then(resData => {
+  alert('User created')
+  console.log(resData);
+})
+})
+.catch(err => {
+  console.log(err)
+}) 
+
+}
+
 
   render() {
     return (
@@ -66,6 +108,7 @@ reader.readAsBinaryString(input);
   placeholder="Add comma seperated Numbers" 
   id="inputDefault"
   value={this.state.numbers}
+  onChange={this.onChangeHandlerNumbers}
   />
 </div>
     <div class="form-group">
@@ -78,7 +121,7 @@ reader.readAsBinaryString(input);
       onChange={this.onChangeHandler}
       ></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Send</button>
+    <button type="submit" onClick={this.onSend} class="btn btn-primary">Send</button>
 </div>
       </div>
     )
